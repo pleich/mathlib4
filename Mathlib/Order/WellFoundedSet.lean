@@ -302,13 +302,12 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
   obtain ⟨m, n, hlt, hmn⟩ := hs g hgs
   exact ⟨m, n, hlt, hf _ (hgs m) _ (hgs n) hmn⟩
 
--- TODO: prove this in terms of `IsAntichain.finite_of_wellQuasiOrdered`
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
-  by_contra! hi
-  obtain ⟨m, n, hmn, h⟩ := hp (hi.natEmbedding _)
-  exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
-    ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
+  have hs : IsAntichain (Subrel r (· ∈ s)) (univ : Set s) :=
+    fun a _ b _ hab ↦ ha a.2 b.2 (Subtype.coe_ne_coe.2 hab)
+  have h := IsAntichain.finite_of_wellQuasiOrdered hs hp
+  exact finite_coe_iff.mp (finite_univ_iff.mp h)
 
 section Refl
 variable [Std.Refl r]
